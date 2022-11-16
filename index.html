@@ -33,15 +33,18 @@
         getMessages()
     })
 
+    //Check for message event
+    socket.on('message', addMessage)
+
     //Add messages function
-    function addMessages(message){
+    function addMessage(message){
         $("#messages").append(`<h4> ${message.name} </h4> <p> ${message.message} </p>`)
     }
 
     function getMessages(){
         $.get('http://localhost:3000/messages', (data) => {
             //Shorthand, instead of callback just call each element on function directly
-            data.forEach(addMessages, this);
+            data.forEach(addMessage, this);
         })
     }
 
