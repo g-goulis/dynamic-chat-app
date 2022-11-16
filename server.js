@@ -1,6 +1,8 @@
-var express = require('express')
-var bodyParser = require('body-parser')
-var app = express()
+const express = require('express')
+const bodyParser = require('body-parser')
+const app = express()
+const http = require('http').Server(app)
+const io = require('socket.io')(http)
 
 app.use(express.static(__dirname))
 app.use(bodyParser.json())
@@ -20,6 +22,10 @@ app.post('/messages', (req, res) =>{
     res.sendStatus(200)
 })
 
-var server = app.listen(3000, () => {
+io.on('connection', (socket) => {
+    console.log('A user connected')
+})
+
+const server = http.listen(3000, () => {
     console.log('Server is listening on port', server.address().port)
 })
