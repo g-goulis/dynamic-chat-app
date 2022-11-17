@@ -29,27 +29,41 @@ app.get('/messages', (req, res) =>{
     }))
 })
 
+app.get('/messages/:user', (req, res) =>{
+    var user = req.params.user
+    Message.find({name: user}, ((error, message) => {
+        if(error){
+            console.error(error)
+        }
+        res.send(message)
+    }))
+})
+
 app.post('/messages', async (req, res) =>{
-    const message = new Message(req.body);
+    try{
 
-    var savedMessage = await message.save()
-    console.log('Saved message')
+        const message = new Message(req.body);
 
-    var censored = await Message.findOne({message: 'badword'})
+        var savedMessage = await message.save()
+        console.log('Saved message')
 
-    if(censored) {
-         await Message.remove({_id: censored.id})
-    } else {
-        io.emit('message', req.body)
+        var censored = await Message.findOne({message: 'badword'})
 
+        if(censored) {
+            await Message.remove({_id: censored.id})
+        } else {
+            io.emit('message', req.body)
+
+        }
+
+        res.sendStatus(200)
+    } catch (e) {
+        res.sendStatus(500)
+        return console.error(e)
+    } finally {
+        //Logging in finally perhaps
     }
 
-    res.sendStatus(200)
-
-    // .catch((err) => {
-    //     res.sendStatus(500)
-    //     return console.error(err)
-    // })
 })
 
 
